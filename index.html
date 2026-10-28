@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Helpdesk AI</title>
+    <meta name="description" content="AI Student Helpdesk powered by Google Gemini.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.8/purify.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="brand">
+            <div class="brand-icon">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                    <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                </svg>
+            </div>
+            <div>
+                <p class="brand-name">Student Helpdesk</p>
+                <p class="brand-sub" id="engineLabel">Gemini AI</p>
+            </div>
+        </div>
+
+        <button id="newChatBtn" class="btn-primary">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            New Chat
+        </button>
+
+        <div class="sidebar-footer">
+            <button id="exportBtn" class="btn-ghost">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Export Chat
+            </button>
+            <button id="clearBtn" class="btn-ghost danger">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+                Clear Chat
+            </button>
+            <button id="settingsBtn" class="btn-ghost">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9z"></path>
+                </svg>
+                Settings
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Chat -->
+    <main class="main">
+        <header class="topbar">
+            <button id="menuBtn" class="icon-btn mobile-only">
+                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+            <div class="topbar-title">Student Helpdesk AI</div>
+            <button id="topbarSettingsBtn" class="model-pill" title="Settings">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4z"></path>
+                </svg>
+                <span id="modelPillLabel">No model</span>
+            </button>
+        </header>
+
+        <!-- Messages -->
+        <div class="messages" id="messages">
+            <div class="welcome" id="welcome">
+                <div class="welcome-icon">🎓</div>
+                <h2>Student Helpdesk AI</h2>
+                <p>Powered by Google Gemini. Ask anything about your courses, deadlines, certificates, or internships.</p>
+                <p class="welcome-hint">Configure your API key in <strong>Settings</strong> to get started.</p>
+            </div>
+        </div>
+
+        <!-- Input -->
+        <div class="input-bar">
+            <div class="input-wrap">
+                <textarea id="input" placeholder="Ask a question... (Enter to send, Shift+Enter for new line)" rows="1"></textarea>
+                <button id="sendBtn" class="send-btn" disabled>
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Settings Modal -->
+<div class="modal-overlay" id="settingsModal">
+    <div class="modal">
+        <div class="modal-head">
+            <h3>Settings</h3>
+            <button class="icon-btn" id="closeSettings">&times;</button>
+        </div>
+        <div class="modal-body">
+            <label>Gemini API Key</label>
+            <input type="password" id="apiKeyInput" placeholder="AIzaSy..." autocomplete="off">
+            <p class="field-hint">Saved locally in your browser. <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">Get a free key ↗</a></p>
+            <p id="apiStatus" class="api-status"></p>
+
+            <label style="margin-top:16px;">Model</label>
+            <select id="modelSelect" disabled>
+                <option value="">Enter an API key to load models...</option>
+            </select>
+            <p class="field-hint" id="modelHint">Models are fetched live from Google's API.</p>
+        </div>
+        <div class="modal-foot">
+            <button id="validateBtn" class="btn-secondary">Validate & Load Models</button>
+            <button id="saveBtn" class="btn-primary-sm">Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- Clear Confirm Modal -->
+<div class="modal-overlay" id="clearModal">
+    <div class="modal" style="max-width:400px">
+        <div class="modal-head">
+            <h3>Clear Chat</h3>
+            <button class="icon-btn" id="closeClear">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p style="color:var(--text-2);font-size:14px;margin-bottom:12px;">Type <strong>DELETE</strong> to confirm.</p>
+            <input type="text" id="clearConfirmInput" placeholder="DELETE" style="text-transform:uppercase">
+            <p id="clearErr" style="color:#f87171;font-size:12px;margin-top:6px;display:none;">Type DELETE to proceed.</p>
+        </div>
+        <div class="modal-foot">
+            <button id="cancelClear" class="btn-secondary">Cancel</button>
+            <button id="confirmClear" class="btn-danger">Confirm Clear</button>
+        </div>
+    </div>
+</div>
+
+<script type="module" src="script.js"></script>
+</body>
+</html>
